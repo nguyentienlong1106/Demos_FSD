@@ -1,3 +1,4 @@
+// lib/store.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -16,6 +17,9 @@ interface FormData {
   description_seo: string;
   attributes: AttributesItem[];
   files: File[] | null;
+  desc_lexical: string;
+  price: number;
+  state: string;
 }
 
 interface FormState {
@@ -32,6 +36,9 @@ const initialFormData: FormData = {
   description_seo: "",
   attributes: [{ id: "", attribute: "", values: "" }],
   files: null,
+  desc_lexical: "",
+  price: 0,
+  state: "",
 };
 
 export const useFormStore = create<FormState>()(

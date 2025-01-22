@@ -1,5 +1,5 @@
+// components/SubmitForm.tsx
 "use client";
-
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useFormStore } from "../lib/store"; // Import useFormStore
+import { useEffect } from "react";
 
 const formSchema = z.object({
   price: z.coerce.number(),
@@ -29,15 +31,23 @@ const formSchema = z.object({
 });
 
 export function SubmitForm() {
+  const { formData, updateFormData } = useFormStore();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: 0,
-      state: "",
+      price: formData.price,
+      state: formData.state,
     },
   });
+  useEffect(() => {
+    form.reset({
+      price: formData.price,
+      state: formData.state,
+    });
+  }, [formData, form]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    updateFormData({ ...formData, ...values });
     try {
       console.log(values);
       toast(
@@ -55,7 +65,7 @@ export function SubmitForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className=" w-auto mx-auto flex flex-col gap-9 space-y-4 relative top-[98px]"
+        className=" w-auto mx-auto flex flex-col gap-6 relative top-[-1px]"
       >
         <FormField
           control={form.control}
@@ -66,7 +76,6 @@ export function SubmitForm() {
               <FormControl>
                 <Input placeholder="" type="number" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -81,7 +90,15 @@ export function SubmitForm() {
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="công khai" />
+                    {field.value === "public" ? (
+                      <SelectValue placeholder="công khai" />
+                    ) : field.value === "spam" ? (
+                      <SelectValue placeholder="nháp" />
+                    ) : field.value === "liên hệ" ? (
+                      <SelectValue placeholder="contact" />
+                    ) : (
+                      <SelectValue placeholder="công khai" />
+                    )}
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -90,7 +107,6 @@ export function SubmitForm() {
                   <SelectItem value="contact">liên hệ</SelectItem>
                 </SelectContent>
               </Select>
-
               <FormMessage />
             </FormItem>
           )}

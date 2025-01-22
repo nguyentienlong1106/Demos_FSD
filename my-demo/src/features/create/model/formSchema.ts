@@ -24,4 +24,5 @@ export const formSchema = z.object({
       message: "Maximum 5 files are allowed",
     })
     .nullable(),
+  desc_lexical: z.string(),
 });

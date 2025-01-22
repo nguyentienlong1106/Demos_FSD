@@ -9,38 +9,9 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 
 import { HeadingNode } from "@lexical/rich-text";
 import ToolbarPlugin from "./ToolbarPlugin";
-
-function onError(error: unknown) {
-  console.error(error);
-}
-
-export default function Editor() {
-  const initialConfig = {
-    namespace: "MyEditor",
-    theme: exampleTheme,
-    nodes: [HeadingNode],
-    onError,
-  };
-
-  return (
-    <div className="w-full mx-auto max-h-[30vh] border relative">
-      <LexicalComposer initialConfig={initialConfig}>
-        <ToolbarPlugin />
-        <RichTextPlugin
-          contentEditable={
-            <ContentEditable className="focus:outline-none p-3 max-h-[25vh] overflow-auto" />
-          }
-          placeholder={
-            <div className="text-gray-300 pl-3">Enter some text...</div>
-          }
-          ErrorBoundary={LexicalErrorBoundary}
-        />
-        <HistoryPlugin />
-        <AutoFocusPlugin />
-      </LexicalComposer>
-    </div>
-  );
-}
+// import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+// import { useEffect, useState } from "react";
+// import { EditorState } from "lexical";
 
 const exampleTheme = {
   ltr: "ltr",
@@ -112,3 +83,62 @@ const exampleTheme = {
     variable: "editor-tokenVariable",
   },
 };
+
+function onError(error: unknown) {
+  console.error(error);
+}
+
+const initialConfig = {
+  namespace: "MyEditor",
+  theme: exampleTheme,
+  nodes: [HeadingNode],
+  onError,
+};
+
+// function MyOnChangePlugin({ onChange }) {
+//   const [editor] = useLexicalComposerContext();
+
+//   useEffect(() => {
+//     return editor.registerUpdateListener(({ editorState }) => {
+//       onChange(editorState);
+//     });
+//   }, [editor, onChange]);
+
+//   return null;
+// }
+
+// interface EditorProps {
+//   onEditorChange: (editorStateJSON: string) => void;
+// }
+
+export default function Editor() {
+  // const [editorStateJSON, setEditorStateJSON] = useState<string | null>(null);
+
+  // const onChange = (editorState: EditorState) => {
+  //   const newEditorStateJSON = JSON.stringify(editorState.toJSON());
+
+  //   if (editorStateJSON !== newEditorStateJSON) {
+  //     setEditorStateJSON(newEditorStateJSON);
+  //     onEditorChange(newEditorStateJSON);
+  //   }
+  // };
+  return (
+    <div className="w-full mx-auto max-h-[30vh] border relative">
+      <LexicalComposer initialConfig={initialConfig}>
+        <ToolbarPlugin />
+        <RichTextPlugin
+          contentEditable={
+            <ContentEditable className="focus:outline-none p-3 max-h-[25vh] overflow-auto" />
+          }
+          placeholder={
+            <div className="text-gray-300 pl-3">Enter some text...</div>
+          }
+          ErrorBoundary={LexicalErrorBoundary}
+        />
+        <HistoryPlugin />
+        {/* <MyOnChangePlugin onChange={onChange} /> */}
+        <AutoFocusPlugin />
+      </LexicalComposer>
+    </div>
+  );
+}

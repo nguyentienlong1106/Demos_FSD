@@ -1,44 +1,21 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useForm, useFieldArray, FormProvider } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-// import Image from "next/image";
-import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "@/components/ui/button";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { CloudUpload, Paperclip } from "lucide-react";
-// import { AspectRatio } from "@/components/ui/aspect-ratio";
-import {
-  FileInput,
-  FileUploader,
-  FileUploaderContent,
-  FileUploaderItem,
-} from "@/components/ui/file-upload";
-import { DropzoneOptions } from "react-dropzone";
-import Editor from "../components/TextEditor/Editor";
+
 import { formSchema } from "../model/formSchema";
 import { useFormStore } from "../lib/store";
+import Editor from "@/shared/ui/TextEditor/Editor";
+import { CustomFormField } from "@/shared/ui/CustomFormField";
+import { FormFile } from "@/shared/ui/InputFile/FormFile";
+import { AttributesField } from "@/shared/ui/AttributesField";
 
 export function AddProductForm() {
   const { formData, updateFormData } = useFormStore();
-  const dropZoneConfig = {
-    accept: {
-      "image/*": [".jpg", ".jpeg", ".png"],
-    },
-    multiple: true,
-    maxFiles: 4,
-    maxSize: 4 * 1024 * 1024,
-  } satisfies DropzoneOptions;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,42 +28,17 @@ export function AddProductForm() {
       description_seo: formData.description_seo,
       attributes: formData.attributes,
       files: formData.files,
+      desc_lexical: formData.desc_lexical,
     },
   });
+
+  // const handleEditorChange = (editorStateJSON: string) => {
+  //   updateFormData({ ...formData, desc_lexical: editorStateJSON });
+  // };
 
   useEffect(() => {
     form.reset(formData);
   }, [formData, form]);
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "attributes",
-  });
-
-  const handleAdd = () => {
-    append({ id: uuidv4(), attribute: "", values: "" });
-  };
-
-  const lastInputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleInputChange = (index: number) => {
-    if (index === fields.length - 1) {
-      handleAdd();
-    }
-  };
-  useEffect(() => {
-    if (lastInputRef.current) {
-      (
-        lastInputRef.current.parentNode?.querySelector(
-          'input[type="text"]'
-        ) as HTMLInputElement
-      )?.focus();
-    }
-  }, [fields]);
-
-  const handleRemove = (index: number) => {
-    remove(index);
-  };
 
   const [isSeoEdited, setIsSeoEdited] = useState<boolean>(false);
   const [isDescSeoEdited, setIsDescSeoEdited] = useState<boolean>(false);
@@ -149,220 +101,53 @@ export function AddProductForm() {
           </Button>
         </div>
 
-        <FormField
-          control={form.control}
-          name="link"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="font-semibold">Đường Dẫn</FormLabel>
-              <FormControl>
-                <Input placeholder="" type="" {...field} />
-              </FormControl>
+        <CustomFormField name="link" label="Đường Dẫn" placeholder="" type="" />
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
+        <CustomFormField
           name="code"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <p className="font-semibold">Mã Sản Phẩm</p>
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="" type="" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Mã Sản Phẩm"
+          placeholder=""
+          type=""
         />
 
-        <FormField
-          control={form.control}
+        <CustomFormField
           name="name_product"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <p className="font-semibold">Tên Sản Phẩm</p>
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="" type="" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Tên Sản Phẩm"
+          placeholder=""
+          type=""
         />
 
-        <FormField
-          control={form.control}
+        <CustomFormField
           name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <p className="font-semibold">Mô Tả </p>
-              </FormLabel>
-              <FormControl>
-                <Input placeholder="" type="" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Mô Tả"
+          placeholder=""
+          type=""
         />
 
-        <FormField
-          control={form.control}
+        <CustomFormField
           name="title_seo"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <p className="font-semibold">Tiêu Đề SEO</p>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
-                  type=""
-                  {...field}
-                  value={seoTitle}
-                  onChange={(e) => handleSeoInputChange(e.target.value)}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Tiêu Đề SEO"
+          placeholder=""
+          type=""
+          value={seoTitle}
+          onChange={handleSeoInputChange}
         />
 
-        <FormField
-          control={form.control}
+        <CustomFormField
           name="description_seo"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <p className="font-semibold">Mô Tả SEO</p>
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder=""
-                  type=""
-                  {...field}
-                  value={descSeo}
-                  onChange={(e) => handleDescSeoInputChange(e.target.value)}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Mô Tả SEO"
+          placeholder=""
+          type=""
+          value={descSeo}
+          onChange={handleDescSeoInputChange}
         />
 
-        <FormField
-          control={form.control}
-          name="files"
-          render={({ field }) => (
-            <FormItem className="w-1/2">
-              <FormLabel>Select File</FormLabel>
-              <FormControl>
-                <FileUploader
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  dropzoneOptions={dropZoneConfig}
-                  className="relative bg-background rounded-lg p-2"
-                >
-                  <FileInput
-                    id="fileInput"
-                    className="outline-dashed outline-1 outline-slate-500"
-                  >
-                    <div className="flex items-center justify-center flex-col p-8 w-auto ">
-                      <CloudUpload className="text-gray-500 w-10 h-10" />
-                      <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="font-semibold">Click to upload</span>
-                        &nbsp; or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        SVG, PNG, JPG or GIF
-                      </p>
-                    </div>
-                  </FileInput>
-                  <FileUploaderContent>
-                    {field.value &&
-                      field.value.map((file, i) => (
-                        <FileUploaderItem key={i} index={i}>
-                          <Paperclip className="h-4 w-4 stroke-current" />
-                          <span>{file.name}</span>
-                        </FileUploaderItem>
-                      ))}
-                  </FileUploaderContent>
-                </FileUploader>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+        <FormFile name="files" label="Select File" />
+
+        <AttributesField
+          name="attributes"
+          label="Thông số kĩ thuật / Thông tin bổ sung"
         />
-        <span className="font-semibold">
-          Thông số kĩ thuật / Thông tin bổ sung{" "}
-        </span>
-        <div className="flex flex-col gap-4 w-full rounded-lg border relative p-6">
-          <div className="flex ">
-            <span className="flex-1">Thuộc Tính</span>
-            <span className="flex-1">Giá Trị</span>
-          </div>
-          {fields.map((field, index) => (
-            <div key={field.id} className="flex gap-4 content-center">
-              <div
-                className="flex-1"
-                ref={index === fields.length - 2 ? lastInputRef : null}
-              >
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      placeholder=""
-                      type="text"
-                      {...form.register(`attributes.${index}.attribute`)}
-                      onChange={() => handleInputChange(index)}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </div>
-              <div
-                className="flex-1"
-                ref={index === fields.length - 2 ? lastInputRef : null}
-              >
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      placeholder=""
-                      type="text"
-                      {...form.register(`attributes.${index}.values`)}
-                      onChange={() => handleInputChange(index)}
-                      //   ref={index === fields.length ? lastInputRef : null}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleRemove(index)}
-                className="flex-none"
-              >
-                -
-              </button>
-            </div>
-          ))}
-          <div>
-            <Button type="button" onClick={handleAdd}>
-              {" "}
-              +{" "}
-            </Button>
-          </div>
-        </div>
         <span className="font-semibold">Nội Dung </span>
         <Editor />
       </form>
