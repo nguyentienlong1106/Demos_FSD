@@ -32,9 +32,9 @@ export function AddProductForm() {
     },
   });
 
-  // const handleEditorChange = (editorStateJSON: string) => {
-  //   updateFormData({ ...formData, desc_lexical: editorStateJSON });
-  // };
+  const handleEditorChange = (editorStateJSON: string) => {
+    return { ...formData, desc_lexical: editorStateJSON };
+  };
 
   useEffect(() => {
     form.reset(formData);
@@ -149,7 +149,8 @@ export function AddProductForm() {
           label="Thông số kĩ thuật / Thông tin bổ sung"
         />
         <span className="font-semibold">Nội Dung </span>
-        <Editor />
+        <Editor onEditorChange={handleEditorChange} />
+        {/* <Editor /> */}
       </form>
     </FormProvider>
   );

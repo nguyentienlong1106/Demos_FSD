@@ -38,7 +38,7 @@ export const FormFile: React.FC<FormFileProps> = ({ name, label }) => {
       name={name}
       render={({ field }) => (
         <FormItem className="w-1/2">
-          <FormLabel>{label}</FormLabel>
+          <FormLabel className="font-bold">{label}</FormLabel>
           <FormControl>
             <FileUploader
               value={field.value}

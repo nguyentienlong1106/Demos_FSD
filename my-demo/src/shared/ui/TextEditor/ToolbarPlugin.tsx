@@ -28,6 +28,7 @@ import {
   RotateCw,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+// import { useDebouncedCallback } from "use-debounce";
 
 export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -60,12 +61,22 @@ export default function ToolbarPlugin() {
     }
   }, []);
 
+  // const handleSave = useDebouncedCallback((content) => {
+  //   console.log(content);
+  // }, 100);
+
   useEffect(() => {
     return mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
         editorState.read(() => {
           $updateToolbar();
         });
+
+        // , dirtyElements, dirtyLeaves
+        // if (dirtyElements.size === 0 && dirtyLeaves.size === 0) {
+        //   return;
+        // }
+        // handleSave(JSON.stringify(editorState));
       }),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
@@ -92,7 +103,7 @@ export default function ToolbarPlugin() {
         LowPriority
       )
     );
-  }, [editor, $updateToolbar]);
+  }, [editor, $updateToolbar]); // , handleSave
 
   const LowPriority = 1;
 

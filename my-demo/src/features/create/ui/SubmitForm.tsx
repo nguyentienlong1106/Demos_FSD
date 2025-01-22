@@ -102,7 +102,7 @@ export function SubmitForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="publicpublic">công khai</SelectItem>
+                  <SelectItem value="public">công khai</SelectItem>
                   <SelectItem value="spam">nháp</SelectItem>
                   <SelectItem value="contact">liên hệ</SelectItem>
                 </SelectContent>

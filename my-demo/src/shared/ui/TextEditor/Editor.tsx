@@ -9,9 +9,10 @@ import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 
 import { HeadingNode } from "@lexical/rich-text";
 import ToolbarPlugin from "./ToolbarPlugin";
-// import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-// import { useEffect, useState } from "react";
-// import { EditorState } from "lexical";
+import { useCallback, useState } from "react";
+import LoadState from "./loadState";
+import { EditorState } from "lexical";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 
 const exampleTheme = {
   ltr: "ltr",
@@ -95,36 +96,26 @@ const initialConfig = {
   onError,
 };
 
-// function MyOnChangePlugin({ onChange }) {
-//   const [editor] = useLexicalComposerContext();
+interface EditorProps {
+  onEditorChange: (editorStateJSON: string) => void;
+}
 
-//   useEffect(() => {
-//     return editor.registerUpdateListener(({ editorState }) => {
-//       onChange(editorState);
-//     });
-//   }, [editor, onChange]);
-
-//   return null;
-// }
-
-// interface EditorProps {
-//   onEditorChange: (editorStateJSON: string) => void;
-// }
-
-export default function Editor() {
-  // const [editorStateJSON, setEditorStateJSON] = useState<string | null>(null);
-
-  // const onChange = (editorState: EditorState) => {
-  //   const newEditorStateJSON = JSON.stringify(editorState.toJSON());
-
-  //   if (editorStateJSON !== newEditorStateJSON) {
-  //     setEditorStateJSON(newEditorStateJSON);
-  //     onEditorChange(newEditorStateJSON);
-  //   }
-  // };
+export default function Editor({ onEditorChange }: EditorProps) {
+  const [editorStateJSON, setEditorStateJSON] = useState("");
+  const onChange = useCallback(
+    (editorState: EditorState) => {
+      const newEditorStateJSON = JSON.stringify(editorState.toJSON());
+      if (editorStateJSON !== newEditorStateJSON) {
+        setEditorStateJSON(newEditorStateJSON);
+        onEditorChange(newEditorStateJSON);
+      }
+    },
+    [editorStateJSON, onEditorChange]
+  );
   return (
     <div className="w-full mx-auto max-h-[30vh] border relative">
       <LexicalComposer initialConfig={initialConfig}>
+        <LoadState />
         <ToolbarPlugin />
         <RichTextPlugin
           contentEditable={
@@ -136,7 +127,7 @@ export default function Editor() {
           ErrorBoundary={LexicalErrorBoundary}
         />
         <HistoryPlugin />
-        {/* <MyOnChangePlugin onChange={onChange} /> */}
+        <OnChangePlugin onChange={onChange} />
         <AutoFocusPlugin />
       </LexicalComposer>
     </div>
