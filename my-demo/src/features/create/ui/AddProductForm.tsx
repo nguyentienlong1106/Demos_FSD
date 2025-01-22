@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import Image from "next/image";
+// import Image from "next/image";
 import { v4 as uuidv4 } from "uuid";
 
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { CloudUpload } from "lucide-react";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { CloudUpload, Paperclip } from "lucide-react";
+// import { AspectRatio } from "@/components/ui/aspect-ratio";
 import {
   FileInput,
   FileUploader,
@@ -25,36 +25,13 @@ import {
   FileUploaderItem,
 } from "@/components/ui/file-upload";
 import { DropzoneOptions } from "react-dropzone";
-import Editor from "../conponents/TextEditor/Editor";
-
-const formSchema = z.object({
-  link: z.string().nonempty("Link không được để trống"),
-  code: z.string().nonempty("Mã sản phẩm không được để trống"),
-  name_product: z.string().nonempty("Tên sản phẩm không được để trống"),
-  description: z.string().nonempty("Mô tả không được để trống"),
-  title_seo: z.string().nonempty("Tiêu đề SEO không được để trống"),
-  description_seo: z.string().nonempty("Mô tả SEO không được để trống"),
-  attributes: z.array(
-    z.object({
-      id: z.string(),
-      attribute: z.string(),
-      values: z.string(),
-    })
-  ),
-  files: z
-    .array(
-      z.instanceof(File).refine((file) => file.size < 4 * 1024 * 1024, {
-        message: "File size must be less than 4MB",
-      })
-    )
-    .max(5, {
-      message: "Maximum 5 files are allowed",
-    })
-    .nullable(),
-});
+import Editor from "../components/TextEditor/Editor";
+import { formSchema } from "../model/formSchema";
+import { useFormStore } from "../lib/store";
 
 export function AddProductForm() {
-  const dropzone = {
+  const { formData, updateFormData } = useFormStore();
+  const dropZoneConfig = {
     accept: {
       "image/*": [".jpg", ".jpeg", ".png"],
     },
@@ -66,16 +43,20 @@ export function AddProductForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      link: "",
-      code: "",
-      name_product: "",
-      description: "",
-      title_seo: "",
-      description_seo: "",
-      attributes: [{ id: uuidv4(), attribute: "", values: "" }],
-      files: null,
+      link: formData.link,
+      code: formData.code,
+      name_product: formData.name_product,
+      description: formData.description,
+      title_seo: formData.title_seo,
+      description_seo: formData.description_seo,
+      attributes: formData.attributes,
+      files: formData.files,
     },
   });
+
+  useEffect(() => {
+    form.reset(formData);
+  }, [formData, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -138,6 +119,7 @@ export function AddProductForm() {
   };
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    updateFormData(values);
     try {
       console.log(values);
       toast(
@@ -283,23 +265,20 @@ export function AddProductForm() {
           control={form.control}
           name="files"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <p className="font-semibold">Thêm Ảnh</p>
-              </FormLabel>
+            <FormItem className="w-1/2">
+              <FormLabel>Select File</FormLabel>
               <FormControl>
                 <FileUploader
                   value={field.value}
                   onValueChange={field.onChange}
-                  dropzoneOptions={dropzone}
-                  reSelect={true}
-                  className="bg-background rounded-lg p-2 max-w-[30vh]"
+                  dropzoneOptions={dropZoneConfig}
+                  className="relative bg-background rounded-lg p-2"
                 >
                   <FileInput
                     id="fileInput"
-                    className="outline-dashed outline-1 outline-slate-500 border"
+                    className="outline-dashed outline-1 outline-slate-500"
                   >
-                    <div className="flex items-center justify-center flex-col p-8 w-full ">
+                    <div className="flex items-center justify-center flex-col p-8 w-auto ">
                       <CloudUpload className="text-gray-500 w-10 h-10" />
                       <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
                         <span className="font-semibold">Click to upload</span>
@@ -313,22 +292,9 @@ export function AddProductForm() {
                   <FileUploaderContent>
                     {field.value &&
                       field.value.map((file, i) => (
-                        <FileUploaderItem
-                          key={i}
-                          index={i}
-                          className="max-w-30 max-h-30 top-[-11vh]"
-                          aria-roledescription={`file ${i + 1} containing ${
-                            file.name
-                          }`}
-                        >
-                          <AspectRatio ratio={1 / 1}>
-                            <Image
-                              src={URL.createObjectURL(file)}
-                              alt={file.name}
-                              fill
-                              className="object-contain rounded-md"
-                            />
-                          </AspectRatio>
+                        <FileUploaderItem key={i} index={i}>
+                          <Paperclip className="h-4 w-4 stroke-current" />
+                          <span>{file.name}</span>
                         </FileUploaderItem>
                       ))}
                   </FileUploaderContent>

@@ -11,7 +11,7 @@ interface FormData {
   link: string;
   code: string;
   name_product: string;
-  description: string; // Lexical serialized content
+  description: string;
   title_seo: string;
   description_seo: string;
   attributes: AttributesItem[];
