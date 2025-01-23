@@ -63,7 +63,10 @@ export function AppSidebar() {
                       <SidebarMenuSub>
                         <SidebarMenuSubItem>
                           <SidebarMenuSubButton asChild>
-                            <a href={item.url} className="hover:bg-black">
+                            <a
+                              href="./dashboard/admin/product/create"
+                              className="hover:bg-black"
+                            >
                               <span>Thêm Mới</span>
                               <Plus className="ml-auto" />
                             </a>
