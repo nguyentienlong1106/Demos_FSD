@@ -13,6 +13,7 @@ import Editor from "@/shared/ui/TextEditor/Editor";
 import { CustomFormField } from "@/shared/ui/CustomFormField";
 import { FormFile } from "@/shared/ui/InputFile/FormFile";
 import { AttributesField } from "@/shared/ui/AttributesField";
+import { FormField } from "@/components/ui/form";
 
 export function AddProductForm() {
   const { formData, updateFormData } = useFormStore();
@@ -33,7 +34,7 @@ export function AddProductForm() {
   });
 
   const handleEditorChange = (editorStateJSON: string) => {
-    return { ...formData, desc_lexical: editorStateJSON };
+    return form.setValue("desc_lexical", editorStateJSON);
   };
 
   useEffect(() => {
@@ -149,8 +150,11 @@ export function AddProductForm() {
           label="Thông số kĩ thuật / Thông tin bổ sung"
         />
         <span className="font-semibold">Nội Dung </span>
-        <Editor onEditorChange={handleEditorChange} />
-        {/* <Editor /> */}
+        <FormField
+          control={form.control}
+          name={"desc_lexical"}
+          render={() => <Editor onEditorChange={handleEditorChange} />}
+        />
       </form>
     </FormProvider>
   );

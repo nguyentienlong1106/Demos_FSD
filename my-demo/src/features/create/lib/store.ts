@@ -25,6 +25,7 @@ interface FormData {
 interface FormState {
   formData: FormData;
   updateFormData: (data: Partial<FormData>) => void;
+  setFormData: (key: keyof FormData, value: FormData[keyof FormData]) => void;
 }
 
 const initialFormData: FormData = {
@@ -48,6 +49,10 @@ export const useFormStore = create<FormState>()(
       updateFormData: (data) =>
         set((state) => ({
           formData: { ...state.formData, ...data },
+        })),
+      setFormData: (key, value) =>
+        set((state) => ({
+          formData: { ...state.formData, [key]: value },
         })),
     }),
     {
